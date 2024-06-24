@@ -1,0 +1,23 @@
+# Getting client inputs
+number_of_employees = int(input("How many employees do you have?: "))
+individual_ROI = int(input("How much does each employee bring per day?: "))
+total_ROI = int(input("What is your target profit of the month?: "))
+daily_ROI = float(total_ROI) / 30  # how much are we targeting per day
+
+# Calculating the total available ROI with current employees
+total_available_ROI = individual_ROI * number_of_employees
+
+# Calculating the number of employees needed
+if total_available_ROI >= daily_ROI:
+    number_of_employees_needed = 0
+    print("You do not need additional employees to meet your target profit.")
+else:
+    number_of_employees_needed = (daily_ROI - total_available_ROI) / individual_ROI
+    number_of_employees_needed = int(number_of_employees_needed) + 1  # Round up to ensure the target is met
+    print(f"You need {number_of_employees_needed} additional employees to meet your target profit.")
+
+# Displaying the result
+if number_of_employees_needed > 0:
+    print(f"You need {number_of_employees_needed} additional employees to meet your target profit.")
+else:
+    print("The current employees are sufficient to meet the target profit.")
