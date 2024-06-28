@@ -1,30 +1,63 @@
-# Getting client inputs
-number_of_employees = int(input("How many employees do you have?: "))
-individual_work_hours = int(input("How many hours does each employee work per day?: "))
-overtime_allowed = int(input("How many days a week is an employee obliged to work extra? "))
-overtime_hours = int(input("How many hours is one overtime shift per day? "))
-total_hours = int(input("How long is this work going to take (in hours)? "))
+from datetime import datetime
 
-# Calculating the total available work hours with current employees (regular hours + overtime)
-regular_working_hours_per_week = individual_work_hours * 5 * number_of_employees
-overtime_working_hours_per_week = overtime_hours * overtime_allowed * number_of_employees
-total_working_hours_per_week = regular_working_hours_per_week + overtime_working_hours_per_week
+def hourbased():
+    # Getting client inputs
+    number_of_employees = int(input("How many employees do you have?: "))
+    individual_work_hours = int(input("How many hours does each employee work per day?: "))
 
-# Calculating the number of weeks needed to complete the total hours of work
-weeks_needed = total_hours / total_working_hours_per_week
+    # Loop for days input with constraint
+    while True:
+        try:
+            individual_work_days = int(input("How many days of the week are employees working? (1-7): "))
+            if 1 <= individual_work_days <= 7:
+                break  # Valid input, exit the loop
+            else:
+                print("Error: Please enter an integer between 1 and 7.")
+        except ValueError:
+            print("Error: Please enter a valid integer.")
 
-# Calculating the number of employees needed
-if weeks_needed <= 1:
-    number_of_employees_needed = 0
-    print("You do not need additional employees to finish this task within a week.")
-else:
-    additional_hours_needed = total_hours - total_working_hours_per_week
-    additional_employees_needed = additional_hours_needed / (individual_work_hours * 5 + overtime_hours * overtime_allowed)
-    number_of_employees_needed = int(additional_employees_needed) + 1  # Round up to ensure the workload is covered
-    print(f"You need {number_of_employees_needed} additional employees to finish this task.")
+    # When is the work due ie Calendar and work on days and hours
+    def get_date(prompt):
+        while True:
+            date_str = input(prompt)
+            try:
+                # Ensure there's no extra whitespace and the format is correct
+                return datetime.strptime(date_str.strip(), "%d/%m/%y")
+            except ValueError:
+                print("Invalid date format. Please enter the date in DD/MM/YY format.")
 
-# Displaying the result
-if number_of_employees_needed > 0:
-    print(f"You need {number_of_employees_needed} additional employees to finish this task.")
-else:
-    print("The current employees are sufficient to complete the task.")
+    # Get and parse the input dates
+    start_day = get_date("When does your project start? (DD/MM/YY): ")
+    end_day = get_date("When is your project due? (DD/MM/YY): ")
+
+    # Calculate the difference in days
+    difference_in_days = (end_day - start_day).days
+
+    # Ensure that end_day is after start_day
+    if difference_in_days < 0:
+        print("The end date must be after the start date.")
+        return
+
+    # Calculate total work hours needed based on difference in days and work hours per day
+    total_work_hours_needed = difference_in_days * individual_work_hours * number_of_employees
+
+    # Calculate the total available work hours with current employees
+    total_available_hours = individual_work_hours * individual_work_days * number_of_employees
+
+    # Calculating the number of employees needed
+    if total_available_hours >= total_work_hours_needed:
+        number_of_employees_needed = 0
+        print("You do not need additional employees to finish this task.")
+    else:
+        number_of_employees_needed = (total_work_hours_needed - total_available_hours) / (
+                    individual_work_hours * individual_work_days)
+        number_of_employees_needed = int(number_of_employees_needed) + 1  # Round up to ensure the workload is covered
+
+    # Displaying the result
+    if number_of_employees_needed > 0:
+        print(f"You need {number_of_employees_needed} additional employees to finish this task.")
+    else:
+        print("The current employees are sufficient to complete the task.")
+
+# Call the function
+hourbased()
