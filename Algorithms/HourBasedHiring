@@ -1,63 +1,42 @@
-from datetime import datetime
+# Define the departments and their proportions
+departments = {
+    'hr': 0.2,
+    'marketing': 0.1,
+    'finance': 0.1,
+    'production': 0.3,
+    'research': 0.05,
+    'customer_service': 0.25
+}
 
-def hourbased():
-    # Getting client inputs
-    number_of_employees = int(input("How many employees do you have?: "))
-    individual_work_hours = int(input("How many hours does each employee work per day?: "))
+# Get the number of employees
+number_of_employees = int(input("How many employees do you have?: "))
+#Since research team is optional we can ask if company needs them really
+#Few companies like Pharmaceuticals need researchers majority don't
 
-    # Loop for days input with constraint
-    while True:
-        try:
-            individual_work_days = int(input("How many days of the week are employees working? (1-7): "))
-            if 1 <= individual_work_days <= 7:
-                break  # Valid input, exit the loop
-            else:
-                print("Error: Please enter an integer between 1 and 7.")
-        except ValueError:
-            print("Error: Please enter a valid integer.")
+# Ask if the company needs research employees
+research_employees_needed = input("Do you need research employees? (Y/N): ").strip().upper()
 
-    # When is the work due ie Calendar and work on days and hours
-    def get_date(prompt):
-        while True:
-            date_str = input(prompt)
-            try:
-                # Ensure there's no extra whitespace and the format is correct
-                return datetime.strptime(date_str.strip(), "%d/%m/%y")
-            except ValueError:
-                print("Invalid date format. Please enter the date in DD/MM/YY format.")
+# Calculate the number of employees in each department
+def calculate_department_employees(number_of_employees, research_needed):
+    if research_needed == 'N':
+        departments['production'] += departments['research']
+        departments['research'] = 0# Calculate the number of employees in each department
 
-    # Get and parse the input dates
-    start_day = get_date("When does your project start? (DD/MM/YY): ")
-    end_day = get_date("When is your project due? (DD/MM/YY): ")
+    HR_employees = 0.2 * number_of_employees
+    Marketing_employees = 0.1 * number_of_employees
+    Finance_employees = 0.1 * number_of_employees
+    Production_employees = 0.3 * number_of_employees
+    Research_employees = 0.05 * number_of_employees
+    Research_employees_needed = 0
+    Customer_service_employees = 0.25 * number_of_employees
 
-    # Calculate the difference in days
-    difference_in_days = (end_day - start_day).days
+    print(f"HR employees: {HR_employees}")
+    print(f"Marketing employees: {Marketing_employees}")
+    print(f"Finance employees: {Finance_employees}")
+    print(f"Production employees: {Production_employees}")
+    print(f"Research employees: {Research_employees}")
+    print(f"Research employees needed: {0}")
+    print(f"Customer service employees: {Customer_service_employees}")
 
-    # Ensure that end_day is after start_day
-    if difference_in_days < 0:
-        print("The end date must be after the start date.")
-        return
-
-    # Calculate total work hours needed based on difference in days and work hours per day
-    total_work_hours_needed = difference_in_days * individual_work_hours * number_of_employees
-
-    # Calculate the total available work hours with current employees
-    total_available_hours = individual_work_hours * individual_work_days * number_of_employees
-
-    # Calculating the number of employees needed
-    if total_available_hours >= total_work_hours_needed:
-        number_of_employees_needed = 0
-        print("You do not need additional employees to finish this task.")
-    else:
-        number_of_employees_needed = (total_work_hours_needed - total_available_hours) / (
-                    individual_work_hours * individual_work_days)
-        number_of_employees_needed = int(number_of_employees_needed) + 1  # Round up to ensure the workload is covered
-
-    # Displaying the result
-    if number_of_employees_needed > 0:
-        print(f"You need {number_of_employees_needed} additional employees to finish this task.")
-    else:
-        print("The current employees are sufficient to complete the task.")
-
-# Call the function
-hourbased()
+# Call the function to calculate and print the number of employees in each department
+calculate_department_employees(number_of_employees, research_employees_needed)
